@@ -6,6 +6,7 @@ export interface IToken extends Document {
   createdAt: Date;
   usedBy: string | null;
   isUsed: boolean;
+  credits: number;
 }
 
 const tokenSchema = new Schema<IToken>({
@@ -31,6 +32,11 @@ const tokenSchema = new Schema<IToken>({
   isUsed: {
     type: Boolean,
     default: false,
+  },
+  credits: {
+    type: Number,
+    default: 0,
+    min: 0,
   },
 }, {
   timestamps: true,

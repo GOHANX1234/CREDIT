@@ -67,6 +67,9 @@ export default function AdminTokens() {
                     Used By
                   </th>
                   <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                    Credits
+                  </th>
+                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                     Status
                   </th>
                   <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
@@ -77,14 +80,14 @@ export default function AdminTokens() {
               <tbody className="divide-y divide-border">
                 {isLoading ? (
                   <tr>
-                    <td colSpan={5} className="px-6 py-4 text-center text-sm text-muted-foreground">
+                    <td colSpan={6} className="px-6 py-4 text-center text-sm text-muted-foreground">
                       <div className="flex justify-center">
                         <div className="animate-spin h-5 w-5 border-t-2 border-purple-500 rounded-full"></div>
                       </div>
                     </td>
                   </tr>
-                ) : tokens && tokens.length > 0 ? (
-                  tokens.map((token) => (
+                ) : tokens && (tokens as any[]).length > 0 ? (
+                  (tokens as any[]).map((token: any) => (
                     <tr key={token.id} className="hover:bg-purple-900/5">
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="text-sm font-mono bg-muted/30 p-1.5 rounded-md">{token.token}</div>
@@ -98,6 +101,11 @@ export default function AdminTokens() {
                         ) : (
                           <span className="text-muted-foreground/50">-</span>
                         )}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm">
+                        <span className={`font-medium ${token.credits > 0 ? 'text-green-500' : 'text-muted-foreground'}`}>
+                          {token.credits || 0}
+                        </span>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <Badge 
@@ -131,7 +139,7 @@ export default function AdminTokens() {
                   ))
                 ) : (
                   <tr>
-                    <td colSpan={5} className="px-6 py-4 text-center text-sm text-muted-foreground">
+                    <td colSpan={6} className="px-6 py-4 text-center text-sm text-muted-foreground">
                       No tokens found
                     </td>
                   </tr>
@@ -147,8 +155,8 @@ export default function AdminTokens() {
                 <div className="animate-spin h-8 w-8 border-t-2 border-purple-500 rounded-full mx-auto"></div>
                 <p className="mt-3 text-muted-foreground">Loading tokens...</p>
               </div>
-            ) : tokens && tokens.length > 0 ? (
-              tokens.map((token) => (
+            ) : tokens && (tokens as any[]).length > 0 ? (
+              (tokens as any[]).map((token: any) => (
                 <Card key={token.id} className="overflow-hidden border border-purple-500/20 shadow-sm">
                   <CardContent className="p-0">
                     <div className="p-4 border-b border-border">
@@ -163,6 +171,13 @@ export default function AdminTokens() {
                           {formatDate(token.createdAt)}
                         </div>
                       </div>
+                      {token.credits > 0 && (
+                        <div className="mb-2">
+                          <span className="text-xs text-green-500 font-medium">
+                            {token.credits} credits included
+                          </span>
+                        </div>
+                      )}
                       <div className="bg-muted/30 p-2 rounded-md text-sm font-mono break-all">
                         {token.token}
                       </div>

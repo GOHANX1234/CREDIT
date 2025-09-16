@@ -21,10 +21,12 @@ export const tokens = pgTable("tokens", {
   createdAt: timestamp("created_at").defaultNow().notNull(),
   usedBy: text("used_by"),
   isUsed: boolean("is_used").default(false).notNull(),
+  credits: integer("credits").default(0).notNull(),
 });
 
 export const insertTokenSchema = createInsertSchema(tokens).pick({
   token: true,
+  credits: true,
 });
 
 // Reseller table

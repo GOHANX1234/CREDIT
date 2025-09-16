@@ -18,7 +18,7 @@ export interface IStorage {
   createAdmin(admin: InsertAdmin): Promise<Admin>;
   
   // Token methods
-  createToken(): Promise<Token>;
+  createToken(credits?: number): Promise<Token>;
   getAllTokens(): Promise<Token[]>;
   getToken(token: string): Promise<Token | undefined>;
   useToken(token: string, username: string): Promise<Token | undefined>;
@@ -26,7 +26,7 @@ export interface IStorage {
   // Reseller methods
   getReseller(id: number): Promise<Reseller | undefined>;
   getResellerByUsername(username: string): Promise<Reseller | undefined>;
-  createReseller(reseller: InsertReseller): Promise<Reseller>;
+  createReseller(reseller: InsertReseller & { credits?: number }): Promise<Reseller>;
   getAllResellers(): Promise<Reseller[]>;
   updateResellerCredits(id: number, amount: number): Promise<Reseller | undefined>;
   updateResellerStatus(id: number, isActive: boolean): Promise<Reseller | undefined>;
@@ -147,7 +147,7 @@ export class MemStorage implements IStorage {
   }
 
   // Token methods
-  async createToken(): Promise<Token> {
+  async createToken(credits: number = 0): Promise<Token> {
     const id = this.tokenId++;
     const tokenString = `REF-${nanoid(10).toUpperCase()}`;
     const token: Token = {
@@ -155,7 +155,8 @@ export class MemStorage implements IStorage {
       token: tokenString,
       createdAt: new Date(),
       usedBy: null,
-      isUsed: false
+      isUsed: false,
+      credits
     };
     this.tokens.set(id, token);
     return token;
@@ -196,12 +197,12 @@ export class MemStorage implements IStorage {
     );
   }
 
-  async createReseller(insertReseller: InsertReseller): Promise<Reseller> {
+  async createReseller(insertReseller: InsertReseller & { credits?: number }): Promise<Reseller> {
     const id = this.resellerId++;
     const reseller: Reseller = {
       ...insertReseller,
       id,
-      credits: 0,
+      credits: insertReseller.credits || 0,
       registrationDate: new Date(),
       isActive: true
     };

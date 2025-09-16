@@ -92,7 +92,7 @@ export class MongoDBStorage implements IStorage {
   }
 
   // Token methods
-  async createToken(): Promise<TokenType> {
+  async createToken(credits: number = 0): Promise<TokenType> {
     try {
       const tokenString = `REF-${nanoid(10).toUpperCase()}`;
       const token = new Token({
@@ -100,7 +100,8 @@ export class MongoDBStorage implements IStorage {
         token: tokenString,
         createdAt: new Date(),
         usedBy: null,
-        isUsed: false
+        isUsed: false,
+        credits
       });
       
       await token.save();
@@ -166,13 +167,13 @@ export class MongoDBStorage implements IStorage {
     }
   }
 
-  async createReseller(insertReseller: InsertReseller): Promise<ResellerType> {
+  async createReseller(insertReseller: InsertReseller & { credits?: number }): Promise<ResellerType> {
     try {
       const reseller = new Reseller({
         id: this.resellerIdCounter++,
         username: insertReseller.username,
         password: insertReseller.password,
-        credits: 0,
+        credits: insertReseller.credits || 0,
         registrationDate: new Date(),
         isActive: true,
         referralToken: insertReseller.referralToken

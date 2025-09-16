@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { queryClient } from "@/lib/queryClient";
 import { apiRequest } from "@/lib/queryClient";
@@ -19,6 +20,9 @@ import {
   MobileDialogDescription,
 } from "@/components/ui/mobile-dialog";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Separator } from "@/components/ui/separator";
 
 interface GenerateTokenModalProps {
   open: boolean;
@@ -31,24 +35,28 @@ export default function GenerateTokenModal({
 }: GenerateTokenModalProps) {
   const { toast } = useToast();
   const isMobile = useIsMobile();
+  const [credits, setCredits] = useState<string>("");
 
   // Generate token mutation
   const generateTokenMutation = useMutation({
     mutationFn: async () => {
-      const response = await apiRequest("POST", "/api/admin/tokens/generate", {});
+      const body = credits ? { credits: parseInt(credits) } : {};
+      const response = await apiRequest("POST", "/api/admin/tokens/generate", body);
       return response.json();
     },
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['/api/admin/tokens'] });
       queryClient.invalidateQueries({ queryKey: ['/api/admin/stats'] });
+      setCredits("");
       onOpenChange(false);
       
       // Copy the token to clipboard
       if (data.token?.token) {
         navigator.clipboard.writeText(data.token.token);
+        const creditsText = credits ? ` with ${credits} credits` : '';
         toast({
           title: "Token Generated",
-          description: `New token has been created and copied to clipboard: ${data.token.token}`,
+          description: `New token${creditsText} has been created and copied to clipboard: ${data.token.token}`,
         });
       } else {
         toast({
@@ -70,13 +78,30 @@ export default function GenerateTokenModal({
     generateTokenMutation.mutate();
   };
 
-  // Button content that's common to both dialog types
-  const buttonContent = (
-    <div className="mt-4">
+  // Form content that's common to both dialog types
+  const formContent = (
+    <div className="space-y-4">
+      <div className="space-y-2">
+        <Label htmlFor="credits">Credits (Optional)</Label>
+        <Input
+          id="credits"
+          type="number"
+          min="0"
+          placeholder="0"
+          value={credits}
+          onChange={(e) => setCredits(e.target.value)}
+          data-testid="input-credits"
+        />
+        <p className="text-xs text-muted-foreground">
+          Leave empty to generate a normal token without credits. Add credits to give bonus credits to whoever uses this token.
+        </p>
+      </div>
+      <Separator />
       <Button
         className="w-full"
         onClick={handleGenerateToken}
         disabled={generateTokenMutation.isPending}
+        data-testid="button-generate-token"
       >
         {generateTokenMutation.isPending ? "Generating..." : "Generate Token"}
       </Button>
@@ -96,7 +121,7 @@ export default function GenerateTokenModal({
             </DialogDescription>
           </DialogHeader>
           <div className="p-4">
-            {buttonContent}
+            {formContent}
           </div>
         </DialogContent>
       </Dialog>
@@ -113,7 +138,9 @@ export default function GenerateTokenModal({
             The token will be copied to your clipboard.
           </DialogDescription>
         </DialogHeader>
-        {buttonContent}
+        <div className="space-y-4">
+          {formContent}
+        </div>
       </DialogContent>
     </Dialog>
   );

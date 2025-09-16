@@ -344,8 +344,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: 'Invalid or already used referral token' });
       }
       
-      // Create reseller
-      const reseller = await storage.createReseller(resellerData);
+      // Create reseller with additional credits from token
+      const resellerWithCredits = {
+        ...resellerData,
+        credits: (token.credits || 0) // Add credits from token
+      };
+      const reseller = await storage.createReseller(resellerWithCredits);
       
       // Mark token as used
       await storage.useToken(resellerData.referralToken, resellerData.username);
@@ -497,7 +501,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post('/api/admin/tokens/generate', isAdmin, async (req, res) => {
     try {
-      const token = await storage.createToken();
+      const { credits } = req.body;
+      
+      // Validate credits
+      if (credits !== undefined && (typeof credits !== 'number' || credits < 0 || !Number.isInteger(credits))) {
+        return res.status(400).json({ message: 'Credits must be a non-negative integer' });
+      }
+      
+      const token = await storage.createToken(credits || 0);
       res.status(201).json({
         success: true,
         token
