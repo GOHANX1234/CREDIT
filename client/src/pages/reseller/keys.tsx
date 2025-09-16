@@ -340,29 +340,31 @@ export default function ResellerKeys() {
 
       {/* Revoke Key Confirmation Dialog */}
       <Dialog open={revokeDialogOpen} onOpenChange={setRevokeDialogOpen}>
-        <DialogContent className="max-w-[90vw] sm:max-w-md !top-[30%] md:!top-[50%] !left-[5vw] md:!left-[50%] !right-[5vw] md:!right-auto !transform-none md:!translate-x-[-50%] md:!translate-y-[-50%] !max-h-[60vh] !overflow-y-auto">
-          <DialogHeader className="text-center space-y-3 pb-4">
-            <DialogTitle className="text-lg font-semibold text-red-500">
+        <DialogContent className="w-[85vw] max-w-[320px] sm:max-w-md mx-auto">
+          <DialogHeader className="text-center space-y-2 pb-3">
+            <DialogTitle className="text-base sm:text-lg font-semibold text-red-500">
               Revoke License Key
             </DialogTitle>
-            <DialogDescription className="text-sm text-muted-foreground leading-relaxed">
+            <DialogDescription className="text-xs sm:text-sm text-muted-foreground leading-relaxed px-2">
               Are you sure you want to revoke this key? This action cannot be undone.
               Users will no longer be able to use this license key after revocation.
             </DialogDescription>
           </DialogHeader>
-          <DialogFooter className="flex flex-col gap-3 pt-4">
+          <DialogFooter className="flex flex-col gap-2 pt-3">
             <Button 
               variant="destructive" 
-              className="w-full h-12 text-base font-medium"
+              className="w-full h-10 sm:h-12 text-sm sm:text-base font-medium"
               onClick={confirmRevokeKey}
               disabled={revokeKeyMutation.isPending}
+              data-testid="button-revoke-confirm"
             >
               {revokeKeyMutation.isPending ? "Revoking..." : "Revoke Key"}
             </Button>
             <Button 
               variant="outline" 
-              className="w-full h-12 text-base font-medium" 
+              className="w-full h-10 sm:h-12 text-sm sm:text-base font-medium" 
               onClick={() => setRevokeDialogOpen(false)}
+              data-testid="button-revoke-cancel"
             >
               Cancel
             </Button>
