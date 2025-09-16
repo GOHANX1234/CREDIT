@@ -21,7 +21,7 @@ async function seedDefaultAdmin(): Promise<void> {
       });
       
       await defaultAdmin.save();
-      console.log('✅ Default admin user created (admin/admin123)');
+      console.log('✅ Default admin user created ');
     } else {
       console.log('✅ Default admin user already exists');
     }
