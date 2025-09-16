@@ -15,26 +15,26 @@ author = "agent"
 
 [[workflows.workflow.tasks]]
 task = "workflow.run"
-args = "DEXX-TER Server"
+args = "Start application"
 
 [[workflows.workflow]]
-name = "DEXX-TER Server"
+name = "Start application"
 author = "agent"
-
-[workflows.workflow.metadata]
-outputType = "webview"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
 args = "npm run dev"
 waitForPort = 5000
 
+[workflows.workflow.metadata]
+outputType = "webview"
+
 [[ports]]
 localPort = 5000
 externalPort = 80
 
 [[ports]]
-localPort = 36511
+localPort = 32863
 externalPort = 3000
 
 [deployment]

@@ -442,7 +442,8 @@ export class MongoDBStorage implements IStorage {
       token: doc.token,
       createdAt: doc.createdAt,
       usedBy: doc.usedBy,
-      isUsed: doc.isUsed
+      isUsed: doc.isUsed,
+      credits: doc.credits
     };
   }
 
